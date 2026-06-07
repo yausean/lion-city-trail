@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Lion City Trail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Permanent+Marker&family=Archivo:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0b14;
+    --bg2:#0f1120;
+    --ink:#e8eaf2;
+    --muted:#8b90a8;
+    --orange:#ff7a18;
+    --orange-glow:#ffb347;
+    --green:#39ff88;
+    --green-glow:#9dffc6;
+    --blue:#3aa0ff;
+    --pink:#ff3d9a;
+    --gold:#ffd34e;
+    --card:#13152a;
+    --line:#262a45;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Archivo',sans-serif;
+    line-height:1.55;
+    overflow-x:hidden;
+    position:relative;
+    min-height:100vh;
+  }
+
+  /* ===== graffiti background layer ===== */
+  .graffiti{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .graffiti svg{position:absolute;opacity:.5;filter:blur(.3px)}
+  .tag{position:absolute;font-family:'Permanent Marker',cursive;font-weight:400;opacity:.07;white-space:nowrap;user-select:none;color:#fff;text-shadow:0 0 18px currentColor}
+  .blob{position:absolute;border-radius:50%;filter:blur(70px);opacity:.22}
+  .grain{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.05;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .wrap{position:relative;z-index:2;max-width:880px;margin:0 auto;padding:0 22px 120px}
+
+  /* ===== hero ===== */
+  header{padding:90px 0 40px;text-align:center;position:relative}
+  .kicker{font-family:'Bebas Neue',sans-serif;letter-spacing:.35em;font-size:15px;color:var(--orange);margin-bottom:10px}
+  h1{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(58px,13vw,128px);
+    line-height:.86;letter-spacing:.01em;
+    color:#fff;
+    text-shadow:
+      0 0 8px rgba(255,122,24,.5),
+      0 0 30px rgba(255,122,24,.35),
+      4px 5px 0 rgba(57,255,136,.18);
+  }
+  h1 .spray{color:var(--green);text-shadow:0 0 10px rgba(57,255,136,.6),0 0 34px rgba(57,255,136,.4)}
+  .sub{font-family:'Permanent Marker',cursive;font-size:clamp(18px,3.5vw,26px);color:var(--gold);margin-top:14px;transform:rotate(-1.4deg)}
+  .meta{color:var(--muted);font-size:13.5px;margin-top:18px;letter-spacing:.04em}
+
+  /* ===== how it works ===== */
+  .howto{
+    margin:42px 0 10px;background:linear-gradient(135deg,#15173000,#1a1d3a);
+    border:1px solid var(--line);border-left:4px solid var(--orange);
+    border-radius:14px;padding:24px 26px;backdrop-filter:blur(3px);
+  }
+  .howto h3{font-family:'Bebas Neue',sans-serif;letter-spacing:.18em;font-size:22px;color:#fff;margin-bottom:10px}
+  .howto p{color:#c5c8dc;font-size:15px;margin-bottom:8px}
+  .emblems{display:flex;gap:14px;flex-wrap:wrap;margin:14px 0 4px}
+  .chip{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:14px;
+    padding:8px 15px;border-radius:40px;border:1px solid;background:rgba(255,255,255,.02)}
+  .chip .dot{width:13px;height:13px;border-radius:50%}
+  .chip.o{color:var(--orange-glow);border-color:#5a3415}
+  .chip.o .dot{background:var(--orange);box-shadow:0 0 12px var(--orange)}
+  .chip.g{color:var(--green-glow);border-color:#15452c}
+  .chip.g .dot{background:var(--green);box-shadow:0 0 12px var(--green)}
+
+  /* ===== stations ===== */
+  .station{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:30px 28px 26px;
+    margin-top:30px;
+    position:relative;
+    overflow:hidden;
+    opacity:0;transform:translateY(26px);
+  }
+  .station.in{animation:rise .7s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes rise{to{opacity:1;transform:none}}
+  .station::before{
+    content:attr(data-num);
+    position:absolute;top:-26px;right:-6px;
+    font-family:'Bebas Neue',sans-serif;font-size:150px;line-height:1;
+    color:#fff;opacity:.04;pointer-events:none;
+  }
+  .st-head{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:4px}
+  .st-num{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.12em;color:var(--gold)}
+  .st-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,5vw,40px);letter-spacing:.02em;color:#fff;line-height:1}
+  .st-emblems{display:flex;gap:8px;margin:8px 0 16px;flex-wrap:wrap}
+  .tagchip{font-size:11.5px;font-weight:700;letter-spacing:.06em;padding:4px 11px;border-radius:30px;text-transform:uppercase}
+  .tagchip.o{background:rgba(255,122,24,.12);color:var(--orange-glow);border:1px solid #5a3415}
+  .tagchip.g{background:rgba(57,255,136,.1);color:var(--green-glow);border:1px solid #15452c}
+  .tagchip.web{background:rgba(58,160,255,.1);color:#9ecbff;border:1px solid #1c3a5e}
+  .tagchip.photo{background:rgba(255,61,154,.1);color:#ff9bc8;border:1px solid #5e1c3f}
+
+  .riddle{
+    font-family:'Permanent Marker',cursive;
+    font-size:17.5px;line-height:1.7;color:var(--green-glow);
+    background:repeating-linear-gradient(135deg,rgba(57,255,136,.03) 0 12px,transparent 12px 24px);
+    border-left:3px solid var(--green);
+    padding:16px 18px;border-radius:8px;margin-bottom:18px;
+    text-shadow:0 0 16px rgba(57,255,136,.25);
+  }
+  .body{color:#cfd2e6;font-size:15px;margin-bottom:10px}
+  .body strong{color:#fff}
+  .quote{font-style:italic;color:#fff;background:rgba(255,255,255,.03);border:1px dashed var(--line);
+    padding:11px 14px;border-radius:8px;margin:10px 0;font-size:15px}
+  .part-label{font-family:'Bebas Neue',sans-serif;letter-spacing:.14em;font-size:15px;color:var(--orange);margin:16px 0 6px}
+
+  /* inputs */
+  .ans{margin-top:14px}
+  .ans label{display:block;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--green);font-weight:700;margin-bottom:6px}
+  input[type=text]{
+    width:100%;background:#0c0e1c;border:1px solid var(--line);border-radius:9px;
+    color:#fff;font-family:'Archivo';font-size:16px;padding:11px 13px;outline:none;transition:.2s;
+  }
+  input[type=text]:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(255,122,24,.15)}
+  input.code{max-width:160px;text-align:center;font-family:'Bebas Neue';font-size:22px;letter-spacing:.1em}
+
+  .choices{display:grid;gap:10px;margin-top:6px}
+  .choice{display:flex;align-items:center;gap:12px;padding:12px 15px;border:1px solid var(--line);
+    border-radius:10px;cursor:pointer;transition:.18s;background:#0c0e1c}
+  .choice:hover{border-color:var(--blue);transform:translateX(3px)}
+  .choice input{accent-color:var(--orange);width:18px;height:18px}
+  .choice.sel{border-color:var(--orange);background:rgba(255,122,24,.08)}
+  .choice .ltr{font-family:'Bebas Neue';font-size:20px;color:var(--gold);width:20px}
+
+  .codeflag{margin-top:14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    background:rgba(58,160,255,.07);border:1px solid #1c3a5e;border-radius:10px;padding:12px 15px}
+  .codeflag .star{color:var(--gold);font-size:18px}
+  .codeflag span{font-size:13.5px;color:#9ecbff;font-weight:700;letter-spacing:.04em}
+  .nocode{margin-top:12px;font-size:13px;color:var(--muted);font-style:italic}
+
+  .photo-btn{margin-top:8px;display:inline-flex;align-items:center;gap:10px;cursor:pointer;
+    font-family:'Bebas Neue';font-size:20px;letter-spacing:.08em;color:#fff;
+    background:linear-gradient(135deg,var(--pink),var(--orange));border:none;border-radius:40px;
+    padding:12px 26px;transition:.2s}
+  .photo-btn:hover{transform:scale(1.04) rotate(-1deg);box-shadow:0 8px 30px rgba(255,61,154,.4)}
+  .photo-btn.done{background:linear-gradient(135deg,var(--green),#11a85a)}
+
+  /* ===== final ===== */
+  .final{margin-top:50px;border:1px solid #3a2e10;border-radius:20px;overflow:hidden;
+    background:radial-gradient(120% 100% at 50% 0%,rgba(255,211,78,.08),transparent 60%),var(--card)}
+  .final-top{text-align:center;padding:34px 24px 8px}
+  .final-top .crown{font-family:'Bebas Neue';font-size:clamp(34px,7vw,58px);color:var(--gold);
+    text-shadow:0 0 24px rgba(255,211,78,.45);letter-spacing:.04em}
+  .final-body{padding:8px 28px 34px}
+  .codegrid{width:100%;border-collapse:collapse;margin:16px 0}
+  .codegrid th{background:#0c0e1c;color:var(--gold);font-family:'Bebas Neue';letter-spacing:.1em;
+    font-size:15px;text-align:left;padding:11px 14px;border:1px solid var(--line)}
+  .codegrid td{padding:10px 14px;border:1px solid var(--line);font-size:14.5px;color:#cfd2e6}
+  .codegrid td:last-child{text-align:center;width:130px}
+  .codegrid input{width:90px;text-align:center;font-family:'Bebas Neue';font-size:20px}
+  .unlock{margin-top:18px;background:rgba(255,122,24,.06);border:1px solid #5a3415;border-left:4px solid var(--orange);
+    border-radius:12px;padding:20px 22px}
+  .unlock h4{font-family:'Bebas Neue';letter-spacing:.14em;font-size:20px;color:#fff;margin-bottom:10px}
+  .calc{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:'Bebas Neue';font-size:26px;color:#fff;margin:8px 0}
+  .calc input{width:96px}
+  .calc .eq{color:var(--gold)}
+  .result{font-size:40px;color:var(--gold);min-width:80px;text-align:center;
+    text-shadow:0 0 22px rgba(255,211,78,.5)}
+  .result.win{animation:pop .5s}
+  @keyframes pop{0%{transform:scale(.6)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+  .hint{font-size:13px;color:var(--muted);font-style:italic;margin-top:8px}
+  .closer{text-align:center;font-family:'Permanent Marker',cursive;color:var(--green-glow);
+    font-size:18px;line-height:1.7;margin-top:36px;transform:rotate(-.6deg);
+    text-shadow:0 0 18px rgba(57,255,136,.25)}
+
+  footer{text-align:center;color:var(--muted);font-size:12px;margin-top:60px;letter-spacing:.05em}
+  .madeby{font-family:'Permanent Marker',cursive;color:var(--pink);font-size:15px;transform:rotate(-1deg);display:inline-block;margin-top:6px}
+
+  /* ===== review summary ===== */
+  .summary{margin-top:46px;border:1px solid var(--line);border-radius:20px;overflow:hidden;background:var(--card)}
+  .summary-top{background:linear-gradient(135deg,#10233f,#0c0e1c);padding:24px 26px;border-bottom:1px solid var(--line)}
+  .summary-top h3{font-family:'Bebas Neue';letter-spacing:.14em;font-size:26px;color:#fff}
+  .summary-top p{color:var(--muted);font-size:13.5px;margin-top:4px}
+  .namefield{margin:18px 26px 4px}
+  .namefield label{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--blue);font-weight:700;margin-bottom:6px}
+  #shot{margin:14px;border:1px dashed var(--line);border-radius:14px;background:#0c0e1c;padding:20px 22px}
+  #shot .shot-h{font-family:'Bebas Neue';font-size:22px;letter-spacing:.1em;color:var(--gold);margin-bottom:2px}
+  #shot .shot-sub{font-size:12px;color:var(--muted);margin-bottom:14px}
+  .sumrow{display:flex;gap:12px;padding:9px 0;border-bottom:1px solid #1c2038;font-size:14px}
+  .sumrow:last-child{border-bottom:none}
+  .sumrow .q{flex:0 0 44%;color:#9aa0bd}
+  .sumrow .a{flex:1;color:#fff;font-weight:700;word-break:break-word}
+  .sumrow .a.empty{color:#54597a;font-weight:400;font-style:italic}
+  .sumrow.code .a{color:var(--green-glow)}
+  .sumrow.final{margin-top:6px;border-top:2px solid var(--gold);padding-top:12px;font-size:16px}
+  .sumrow.final .a{color:var(--gold);font-family:'Bebas Neue';font-size:24px;letter-spacing:.08em}
+  .sum-actions{display:flex;gap:12px;flex-wrap:wrap;margin:4px 26px 26px}
+  .sbtn{cursor:pointer;border:none;border-radius:40px;padding:11px 22px;font-family:'Bebas Neue';font-size:17px;letter-spacing:.07em;transition:.2s}
+  .sbtn.fill{background:linear-gradient(135deg,var(--blue),#1d6fd0);color:#fff}
+  .sbtn.ghost{background:transparent;border:1px solid var(--line);color:#c5c8dc}
+  .sbtn:hover{transform:translateY(-2px)}
+
+  @media(max-width:560px){
+    .station{padding:24px 18px}
+    .codegrid td:first-child{font-size:13px}
+  }
+</style>
+</head>
+<body>
+
+<div class="graffiti" id="graffiti"></div>
+<div class="grain"></div>
+
+<div class="wrap">
+  <header>
+    <div class="kicker">NATIONAL MUSEUM OF SINGAPORE</div>
+    <h1>THE LION<br><span class="spray">CITY</span> TRAIL</h1>
+    <div class="sub">a puzzle quest through Singapore's story</div>
+  </header>
+
+  <div class="howto">
+    <h3>HOW THIS WORKS</h3>
+    <p>Some screens stay dark until you wake them. Look for the glowing emblems and activate the right one:</p>
+    <div class="emblems">
+      <span class="chip o"><span class="dot"></span>ORANGE / YELLOW flame</span>
+      <span class="chip g"><span class="dot"></span>GREEN shoot</span>
+    </div>
+    <p>Solve all six stations. Four of them give you a <strong style="color:#9ecbff">★ code number</strong>. Those four unlock the <strong style="color:var(--gold)">FINAL CODE</strong> at the bottom. Type your answers right here as you go — your final code fills in automatically. Good luck, explorer.</p>
+  </div>
+
+  <!-- STATION 1 -->
+  <section class="station" data-num="01">
+    <div class="st-head"><span class="st-num">STATION 1</span><span class="st-title">The Glass Dome</span></div>
+    <div class="st-emblems"><span class="tagchip o">orange</span><span class="tagchip g">green</span></div>
+    <div class="riddle">A glass dome holds a falling rain,<br>where flight and forest meet again.<br>Touch the twin marks of gold and green —<br>only then is the secret seen.</div>
+    <div class="body">First, find the building this dome belongs to. Then activate <strong>both</strong> emblems to reveal the hidden words and fill in the blank:</div>
+    <div class="quote">"Singapore's Changi Airport is one of the busiest in the world, with a plane landing or taking off every ______ seconds."</div>
+    <div class="ans">
+      <label>Your answer (a number)</label>
+      <input type="text" class="code" id="s1code" data-code="1" placeholder="?" inputmode="numeric">
+    </div>
+    <div class="codeflag"><span class="star">★</span><span>This is CODE NUMBER 1 — it flows down to the final lock automatically.</span></div>
+  </section>
+
+  <!-- STATION 2 -->
+  <section class="station" data-num="02">
+    <div class="st-head"><span class="st-num">STATION 2</span><span class="st-title">The Oath</span></div>
+    <div class="st-emblems"><span class="tagchip web">phone needed</span></div>
+    <div class="riddle">Two men, hands raised, a solemn vow;<br>a crowd looks on — a nation, now.<br>No caption here to give the date —<br>your phone may help you investigate.</div>
+    <div class="body">This relief shows the swearing-in of Singapore's first Prime Minister and his cabinet — the nation's first step toward <strong>self-government</strong>. Use your phone: in what <strong>year</strong> did this oath-taking ceremony take place?</div>
+    <div class="ans">
+      <label>Your answer (a year)</label>
+      <input type="text" class="code" id="s2code" data-code="2" placeholder="????" inputmode="numeric">
+    </div>
+    <div class="codeflag"><span class="star">★</span><span>This is CODE NUMBER 2.</span></div>
+  </section>
+
+  <!-- STATION 3 -->
+  <section class="station" data-num="03">
+    <div class="st-head"><span class="st-num">STATION 3</span><span class="st-title">From the Ashes</span></div>
+    <div class="st-emblems"><span class="tagchip o">orange</span><span class="tagchip g">green</span><span class="tagchip web">phone needed</span></div>
+    <div class="riddle">Two screens hold one story. Wake the orange flame,<br>then the green shoot, and watch a city fall — and rise again.</div>
+
+    <div class="part-label">PART A — THE FIRE (orange emblem)</div>
+    <div class="quote">"Japanese attacks from the air, sea and land culminated in the fall of Singapore in the year ______."</div>
+    <div class="ans">
+      <label>Year (a number)</label>
+      <input type="text" class="code" id="s3code" data-code="3" placeholder="????" inputmode="numeric">
+    </div>
+    <div class="codeflag"><span class="star">★</span><span>This is CODE NUMBER 3.</span></div>
+
+    <div class="part-label">PART B — THE GREEN SHOOT (green emblem)</div>
+    <div class="body">Read the screen and fill in the blank:</div>
+    <div class="quote">"The people of Singapore rallied to build a nation, labouring in the urgent construction of homes, ____________, and infrastructure."</div>
+    <div class="ans"><label>Missing word</label><input type="text" id="s3b" placeholder="Type the word from the screen"></div>
+
+    <div class="part-label">PART C — A MESSAGE OF PEACE</div>
+    <div class="body">From <strong>1983 to 2022</strong>, Daisaku Ikeda, President of the Soka Gakkai International, wrote a peace proposal every year — <strong>forty</strong> in all. He taught that lasting peace is built not through treaties alone but through a transformation in the human heart: choosing dialogue, respect for the dignity of every life, and the courage of ordinary people — especially youth — to act.</div>
+    <div class="body">Search <strong>ikeda.org</strong> to complete his words:</div>
+    <div class="quote">"Nothing is more ____________ than war. Nothing is more cruel."</div>
+    <div class="ans"><input type="text" id="s3c1" placeholder="The missing word about war"></div>
+    <div class="body" style="margin-top:14px">And on the weapons that threaten all humanity, he taught that the real enemy is not the weapons themselves, but the readiness to <strong>____________</strong> others who are seen as a threat — which is why he devoted himself to the <strong>____________</strong> of nuclear weapons.</div>
+    <div class="ans"><input type="text" id="s3c2" placeholder="readiness to ___ others"></div>
+    <div class="ans"><input type="text" id="s3c3" placeholder="the ___ of nuclear weapons"></div>
+    <div class="nocode">Parts B & C are words to think about and discuss — no code numbers here.</div>
+  </section>
+
+  <!-- STATION 4 -->
+  <section class="station" data-num="04">
+    <div class="st-head"><span class="st-num">STATION 4</span><span class="st-title">The Living River</span></div>
+    <div class="st-emblems"><span class="tagchip o">orange</span></div>
+    <div class="riddle">Find the river where bumboats crowd,<br>their tyres like necklaces, hulls low with cargo.<br>Behind the stone wall stand the tall shophouses, three storeys high,<br>where bullock carts and rickshaws pass.<br><br>Wake the orange flame, and the walls turn to glass —<br>a doll's-house view of life within.<br>Climb with your eyes to the highest floor on the left.<br>The day's hard labour is done; bodies lie still, eyes closed.</div>
+    <div class="body"><strong>What are the people on the third floor (left) doing?</strong></div>
+    <div class="choices" id="ch4">
+      <label class="choice"><input type="radio" name="q4" value="1"><span class="ltr">A</span> Cooking a meal</label>
+      <label class="choice"><input type="radio" name="q4" value="2"><span class="ltr">B</span> Resting</label>
+      <label class="choice"><input type="radio" name="q4" value="3"><span class="ltr">C</span> Trading goods</label>
+      <label class="choice"><input type="radio" name="q4" value="4"><span class="ltr">D</span> Repairing boats</label>
+    </div>
+    <div class="codeflag"><span class="star">★</span><span>CODE NUMBER 4 = the position of your letter (A=1, B=2, C=3, D=4).</span></div>
+  </section>
+
+  <!-- STATION 5 -->
+  <section class="station" data-num="05">
+    <div class="st-head"><span class="st-num">STATION 5</span><span class="st-title">Pose Like a Crab!</span></div>
+    <div class="st-emblems"><span class="tagchip photo">photo time</span></div>
+    <div class="riddle">You've reached the journey's end, where a giant of blue and orange fills the wall —<br>claws raised, eyes on stalks, ruler of the mangrove glow.<br><br>No words to find here, no number to crack.<br>Just face the screen, raise your arms like mighty pincers, and freeze.</div>
+    <div class="body">Strike your best <strong>crab pose</strong> with the creature behind you — and capture the moment. Snap! 📸</div>
+    <button class="photo-btn" id="crabBtn">🦀 &nbsp;TAP WHEN PHOTO'S DONE</button>
+    <div class="nocode">No code number — pure glory.</div>
+  </section>
+
+  <!-- STATION 6 -->
+  <section class="station" data-num="06">
+    <div class="st-head"><span class="st-num">STATION 6</span><span class="st-title">The Courage Within</span></div>
+    <div class="st-emblems"><span class="tagchip web">phone needed</span></div>
+    <div class="riddle">Wait for the crab to fade, and watch the night sky<br>stitch its stars into a mane and a roar.<br><br>The lion is no ordinary beast — it is the king, and it fears nothing.<br>The Soka Gakkai teaches that its courage is not far away in the stars,<br>but already inside you.</div>
+    <div class="body">In Buddhism, the lion is a symbol of courage. Search <strong>sokaglobal.org</strong> to complete the words of Nichiren Daishonin:</div>
+    <div class="quote">"Each of you should summon up the courage of a ______ ______ and never succumb to threats from anyone."</div>
+    <div class="ans"><label>Your answer (two words)</label><input type="text" id="s6" placeholder="_____ _____"></div>
+    <div class="nocode">A reflection to carry with you — no code number.</div>
+  </section>
+
+  <!-- FINAL -->
+  <section class="final" id="final">
+    <div class="final-top"><div class="crown">★ THE FINAL CODE ★</div></div>
+    <div class="final-body">
+      <div class="body">You collected four code numbers along the way. They appear here automatically as you fill them in above.</div>
+      <table class="codegrid">
+        <tr><th>From Station</th><th>Your Code Number</th></tr>
+        <tr><td>1 · seconds per plane</td><td><input type="text" id="f1" readonly></td></tr>
+        <tr><td>2 · year of the oath</td><td><input type="text" id="f2" readonly></td></tr>
+        <tr><td>3A · year of the fall</td><td><input type="text" id="f3" readonly></td></tr>
+        <tr><td>4 · letter position</td><td><input type="text" id="f4" readonly></td></tr>
+      </table>
+
+      <div class="unlock">
+        <h4>🔓 UNLOCK THE CODE</h4>
+        <div class="body">Two of your numbers are years that bookend Singapore's darkest-to-brightest turn. Subtract them:</div>
+        <div class="calc">
+          <input type="text" class="code" id="u2" readonly placeholder="oath">
+          <span>−</span>
+          <input type="text" class="code" id="u3" readonly placeholder="fall">
+          <span class="eq">=</span>
+          <span class="result" id="result">?</span>
+        </div>
+        <div class="hint">That number is how many years Singapore took to go from the fall (1942) to its first self-government (1959) — the span this whole exhibition is about. It's the key that opens the final box.</div>
+      </div>
+
+      <div class="closer">
+        You began in a city that fell in war and rose again<br>through the courage of ordinary people.<br>You end beneath a lion of stars.<br>That same courage lives in <em>you</em>. Carry it out the door.
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEW SUMMARY -->
+  <section class="summary" id="summary">
+    <div class="summary-top">
+      <h3>📋 ANSWER SUMMARY — FOR REVIEW</h3>
+      <p>Add your name/group, tap "Update summary", then screenshot this box and send it to your facilitator.</p>
+    </div>
+    <div class="namefield">
+      <label>Name / Group</label>
+      <input type="text" id="teamName" placeholder="e.g. Group 3 — Sarah, Wei, Aisha">
+    </div>
+    <div id="shot">
+      <div class="shot-h" id="shotTitle">THE LION CITY TRAIL</div>
+      <div class="shot-sub" id="shotName">Name / Group: —</div>
+
+      <div class="sumrow code"><div class="q">1 · Seconds per plane ★</div><div class="a" id="o1"></div></div>
+      <div class="sumrow code"><div class="q">2 · Year of the oath ★</div><div class="a" id="o2"></div></div>
+      <div class="sumrow code"><div class="q">3A · Year of the fall ★</div><div class="a" id="o3"></div></div>
+      <div class="sumrow"><div class="q">3B · Homes, ___, infrastructure</div><div class="a" id="o3b"></div></div>
+      <div class="sumrow"><div class="q">3C · "Nothing is more ___ than war"</div><div class="a" id="o3c1"></div></div>
+      <div class="sumrow"><div class="q">3C · Readiness to ___ others</div><div class="a" id="o3c2"></div></div>
+      <div class="sumrow"><div class="q">3C · The ___ of nuclear weapons</div><div class="a" id="o3c3"></div></div>
+      <div class="sumrow code"><div class="q">4 · Third floor (letter) ★</div><div class="a" id="o4"></div></div>
+      <div class="sumrow"><div class="q">5 · Crab photo</div><div class="a" id="o5"></div></div>
+      <div class="sumrow"><div class="q">6 · Courage of a ___ ___</div><div class="a" id="o6"></div></div>
+      <div class="sumrow final"><div class="q">🔓 FINAL UNLOCK (oath − fall)</div><div class="a" id="oFinal"></div></div>
+    </div>
+    <div class="sum-actions">
+      <button class="sbtn fill" id="updateBtn">↻ Update summary</button>
+      <button class="sbtn ghost" id="resetBtn">Clear all answers</button>
+    </div>
+  </section>
+
+  <footer>
+    The Lion City Trail · designed for the National Museum of Singapore
+    <br><span class="madeby">…and yes, this HTML was made by hand. (Hi, mother-in-law! 👋)</span>
+  </footer>
+</div>
+
+<script>
+  // ---- graffiti background generation ----
+  (function(){
+    const g=document.getElementById('graffiti');
+    const tags=['SG','RISE','PEACE','COURAGE','1959','1942','LION','MAJULAH','KAMPONG','MERDEKA','ROAR','BUILD','HOPE','SINGAPURA'];
+    const colors=['#ff7a18','#39ff88','#3aa0ff','#ff3d9a','#ffd34e'];
+    // soft glow blobs
+    for(let i=0;i<6;i++){
+      const b=document.createElement('div');b.className='blob';
+      const s=240+Math.random()*260;
+      b.style.width=b.style.height=s+'px';
+      b.style.left=Math.random()*100+'%';
+      b.style.top=Math.random()*230+'%';
+      b.style.background=colors[i%colors.length];
+      g.appendChild(b);
+    }
+    // scattered marker tags
+    for(let i=0;i<26;i++){
+      const t=document.createElement('div');t.className='tag';
+      t.textContent=tags[Math.floor(Math.random()*tags.length)];
+      t.style.left=Math.random()*100+'%';
+      t.style.top=Math.random()*330+'%';
+      t.style.fontSize=(26+Math.random()*70)+'px';
+      t.style.transform='rotate('+(Math.random()*60-30)+'deg)';
+      t.style.color=colors[Math.floor(Math.random()*colors.length)];
+      g.appendChild(t);
+    }
+  })();
+
+  // ---- reveal on scroll ----
+  const io=new IntersectionObserver((es)=>{
+    es.forEach((e,i)=>{ if(e.isIntersecting){ e.target.style.animationDelay=(i*40)+'ms'; e.target.classList.add('in'); io.unobserve(e.target);} });
+  },{threshold:.12});
+  document.querySelectorAll('.station').forEach(s=>io.observe(s));
+
+  // ---- code flow ----
+  const map={1:'f1',2:'f2',3:'f3',4:'f4'};
+  function sync(){
+    document.querySelectorAll('input.code[data-code]').forEach(inp=>{
+      const id=map[inp.dataset.code];
+      if(id) document.getElementById(id).value=inp.value.trim();
+    });
+    // station 4 radio
+    const r=document.querySelector('input[name=q4]:checked');
+    document.getElementById('f4').value = r? r.value : '';
+    // unlock calc
+    const oath=parseInt(document.getElementById('f2').value,10);
+    const fall=parseInt(document.getElementById('f3').value,10);
+    document.getElementById('u2').value=isNaN(oath)?'':oath;
+    document.getElementById('u3').value=isNaN(fall)?'':fall;
+    const res=document.getElementById('result');
+    let unlock='';
+    if(!isNaN(oath)&&!isNaN(fall)){
+      const d=oath-fall;
+      res.textContent=d;
+      res.classList.remove('win');void res.offsetWidth;
+      if(d===17) res.classList.add('win');
+      unlock=String(d);
+    } else { res.textContent='?'; }
+    updateSummary(unlock);
+  }
+
+  // ---- summary collection ----
+  function setCell(id,val,isCode){
+    const el=document.getElementById(id);
+    if(!el)return;
+    if(val&&val.trim()){ el.textContent=val.trim(); el.classList.remove('empty'); }
+    else { el.textContent='(not answered)'; el.classList.add('empty'); }
+  }
+  const letters={'1':'A — Cooking a meal','2':'B — Resting','3':'C — Trading goods','4':'D — Repairing boats'};
+  function val(id){const e=document.getElementById(id);return e?e.value:'';}
+  function updateSummary(unlock){
+    const name=val('teamName');
+    document.getElementById('shotName').textContent='Name / Group: '+(name.trim()||'—');
+    setCell('o1',val('s1code'));
+    setCell('o2',val('s2code'));
+    setCell('o3',val('s3code'));
+    setCell('o3b',val('s3b'));
+    setCell('o3c1',val('s3c1'));
+    setCell('o3c2',val('s3c2'));
+    setCell('o3c3',val('s3c3'));
+    const r=document.querySelector('input[name=q4]:checked');
+    setCell('o4', r?letters[r.value]:'');
+    const cb=document.getElementById('crabBtn');
+    setCell('o5', cb.classList.contains('done')?'Done ✓':'');
+    setCell('o6',val('s6'));
+    const f=document.getElementById('oFinal');
+    if(unlock){ f.textContent=unlock; f.classList.remove('empty'); }
+    else { f.textContent='(incomplete)'; f.classList.add('empty'); }
+  }
+  document.querySelectorAll('input.code[data-code]').forEach(i=>i.addEventListener('input',sync));
+  ['s3b','s3c1','s3c2','s3c3','s6','teamName'].forEach(id=>{
+    const e=document.getElementById(id); if(e) e.addEventListener('input',sync);
+  });
+  document.querySelectorAll('input[name=q4]').forEach(r=>r.addEventListener('change',()=>{
+    document.querySelectorAll('#ch4 .choice').forEach(c=>c.classList.remove('sel'));
+    r.closest('.choice').classList.add('sel');
+    sync();
+  }));
+
+  // ---- crab button ----
+  const cb=document.getElementById('crabBtn');
+  cb.addEventListener('click',()=>{
+    cb.classList.toggle('done');
+    cb.textContent=cb.classList.contains('done')?'✓  CRAB CAPTURED!':'🦀  TAP WHEN PHOTO\'S DONE';
+    sync();
+  });
+
+  // ---- summary buttons ----
+  document.getElementById('updateBtn').addEventListener('click',()=>{
+    sync();
+    document.getElementById('summary').scrollIntoView({behavior:'smooth'});
+  });
+  document.getElementById('resetBtn').addEventListener('click',()=>{
+    if(!confirm('Clear all answers on this device? This cannot be undone.'))return;
+    document.querySelectorAll('input[type=text]').forEach(i=>i.value='');
+    document.querySelectorAll('input[name=q4]').forEach(r=>r.checked=false);
+    document.querySelectorAll('#ch4 .choice').forEach(c=>c.classList.remove('sel'));
+    cb.classList.remove('done'); cb.textContent='🦀  TAP WHEN PHOTO\'S DONE';
+    sync();
+  });
+
+  sync();
+</script>
+</body>
+</html>

@@ -234,7 +234,7 @@
       <span class="chip o"><span class="dot"></span>ORANGE / YELLOW flame</span>
       <span class="chip g"><span class="dot"></span>GREEN shoot</span>
     </div>
-    <p>Solve all six stations. Four of them give you a <strong style="color:#9ecbff">★ code number</strong>. Those four unlock the <strong style="color:var(--gold)">FINAL CODE</strong> at the bottom. Type your answers right here as you go — your final code fills in automatically. Good luck, explorer.</p>
+    <p>Solve all four stations. Each one gives you a <strong style="color:#9ecbff">★ code number</strong>. Those four unlock the <strong style="color:var(--gold)">FINAL CODE</strong> at the bottom. Type your answers right here as you go — your final code fills in automatically. Good luck, explorer.</p>
   </div>
 
   <!-- STATION 1 -->
@@ -309,27 +309,6 @@
     <div class="codeflag"><span class="star">★</span><span>CODE NUMBER 4 = the position of your letter (A=1, B=2, C=3, D=4).</span></div>
   </section>
 
-  <!-- STATION 5 -->
-  <section class="station" data-num="05">
-    <div class="st-head"><span class="st-num">STATION 5</span><span class="st-title">Pose Like a Crab!</span></div>
-    <div class="st-emblems"><span class="tagchip photo">photo time</span></div>
-    <div class="riddle">You've reached the journey's end, where a giant of blue and orange fills the wall —<br>claws raised, eyes on stalks, ruler of the mangrove glow.<br><br>No words to find here, no number to crack.<br>Just face the screen, raise your arms like mighty pincers, and freeze.</div>
-    <div class="body">Strike your best <strong>crab pose</strong> with the creature behind you — and capture the moment. Snap! 📸</div>
-    <button class="photo-btn" id="crabBtn">🦀 &nbsp;TAP WHEN PHOTO'S DONE</button>
-    <div class="nocode">No code number — pure glory.</div>
-  </section>
-
-  <!-- STATION 6 -->
-  <section class="station" data-num="06">
-    <div class="st-head"><span class="st-num">STATION 6</span><span class="st-title">The Courage Within</span></div>
-    <div class="st-emblems"><span class="tagchip web">phone needed</span></div>
-    <div class="riddle">Wait for the crab to fade, and watch the night sky<br>stitch its stars into a mane and a roar.<br><br>The lion is no ordinary beast — it is the king, and it fears nothing.<br>The Soka Gakkai teaches that its courage is not far away in the stars,<br>but already inside you.</div>
-    <div class="body">In Buddhism, the lion is a symbol of courage. Search <strong>sokaglobal.org</strong> to complete the words of Nichiren Daishonin:</div>
-    <div class="quote">"Each of you should summon up the courage of a ______ ______ and never succumb to threats from anyone."</div>
-    <div class="ans"><label>Your answer (two words)</label><input type="text" id="s6" placeholder="_____ _____"></div>
-    <div class="nocode">A reflection to carry with you — no code number.</div>
-  </section>
-
   <!-- FINAL -->
   <section class="final" id="final">
     <div class="final-top"><div class="crown">★ THE FINAL CODE ★</div></div>
@@ -384,8 +363,6 @@
       <div class="sumrow"><div class="q">3C · Readiness to ___ others</div><div class="a" id="o3c2"></div></div>
       <div class="sumrow"><div class="q">3C · The ___ of nuclear weapons</div><div class="a" id="o3c3"></div></div>
       <div class="sumrow code"><div class="q">4 · Third floor (letter) ★</div><div class="a" id="o4"></div></div>
-      <div class="sumrow"><div class="q">5 · Crab photo</div><div class="a" id="o5"></div></div>
-      <div class="sumrow"><div class="q">6 · Courage of a ___ ___</div><div class="a" id="o6"></div></div>
       <div class="sumrow final"><div class="q">🔓 FINAL UNLOCK (oath − fall)</div><div class="a" id="oFinal"></div></div>
     </div>
     <div class="sum-actions">
@@ -483,15 +460,12 @@
     setCell('o3c3',val('s3c3'));
     const r=document.querySelector('input[name=q4]:checked');
     setCell('o4', r?letters[r.value]:'');
-    const cb=document.getElementById('crabBtn');
-    setCell('o5', cb.classList.contains('done')?'Done ✓':'');
-    setCell('o6',val('s6'));
     const f=document.getElementById('oFinal');
     if(unlock){ f.textContent=unlock; f.classList.remove('empty'); }
     else { f.textContent='(incomplete)'; f.classList.add('empty'); }
   }
   document.querySelectorAll('input.code[data-code]').forEach(i=>i.addEventListener('input',sync));
-  ['s3b','s3c1','s3c2','s3c3','s6','teamName'].forEach(id=>{
+  ['s3b','s3c1','s3c2','s3c3','teamName'].forEach(id=>{
     const e=document.getElementById(id); if(e) e.addEventListener('input',sync);
   });
   document.querySelectorAll('input[name=q4]').forEach(r=>r.addEventListener('change',()=>{
@@ -499,14 +473,6 @@
     r.closest('.choice').classList.add('sel');
     sync();
   }));
-
-  // ---- crab button ----
-  const cb=document.getElementById('crabBtn');
-  cb.addEventListener('click',()=>{
-    cb.classList.toggle('done');
-    cb.textContent=cb.classList.contains('done')?'✓  CRAB CAPTURED!':'🦀  TAP WHEN PHOTO\'S DONE';
-    sync();
-  });
 
   // ---- summary buttons ----
   document.getElementById('updateBtn').addEventListener('click',()=>{
@@ -518,7 +484,6 @@
     document.querySelectorAll('input[type=text]').forEach(i=>i.value='');
     document.querySelectorAll('input[name=q4]').forEach(r=>r.checked=false);
     document.querySelectorAll('#ch4 .choice').forEach(c=>c.classList.remove('sel'));
-    cb.classList.remove('done'); cb.textContent='🦀  TAP WHEN PHOTO\'S DONE';
     sync();
   });
 
